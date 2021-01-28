@@ -38,4 +38,9 @@ The *pointerEvents* prop allows us to control whether an component can respond t
 + **react-native-maps** package used to display current location on MapView.
 + **react-native-permissions** package used to request location permission.
 + **@react-native-community/netinfo** package is used to check current network connectivity.
-+ 
++ Keyboard handling
+    - *MeasureLayout* component will measure the available space for our messaging UI
+    - *KeyboardState* component will keep track of the keyboards visibility, height etc.
+    - *MessagingContainer* component will display the correct IME(text, images) at the correct size
+  - **onLayout** prop can be used to measure view to get values for x, y, width, height.
+  - 
