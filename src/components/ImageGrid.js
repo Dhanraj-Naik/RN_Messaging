@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { CameraRoll, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import CameraRoll from '@react-native-community/cameraroll';
 import Grid from './Grid';
 
 const TAG = 'ImageGrid.js';
@@ -40,9 +41,50 @@ class ImageGrid extends Component {
                 // { uri: 'https://picsum.photos/600/600?image=40' },
             ],
         };
+
+        this.loading = false;
+        this.cursor = null;
+    }
+
+
+    async componentDidMount() {
+
+        this.getImages();
+
+    }
+
+    getNextImages = () => {
+        if (!this.cursor) return;
+        this.getImages(this.cursor);
+    };
+
+    getImages = async (after) => {
+        const permissionResult = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+        if (permissionResult !== 'granted') {
+            console.log('not granted');
+            return;
+        }
+
+
+        if (this.loading) return;
+        this.loading = true;
+        //get images
+        const results = await CameraRoll.getPhotos({ first: 20, after });
+        const { edges, page_info: { has_next_page, end_cursor } } = results;
+
+        const loadedImages = edges.map(item => item.node.image);
+
+        this.setState({
+            images: this.state.images.concat(loadedImages),
+        }, () => {
+            this.loading = false;
+            this.cursor = has_next_page ? end_cursor : null;
+        });
     }
 
     renderItem = ({ item: { uri }, size, marginTop, marginLeft }) => {
+
+        const { onPressImage } = this.props;
 
         const style = {
             width: size,
@@ -52,7 +94,14 @@ class ImageGrid extends Component {
         };
 
         return (
-            <Image source={{ uri }} style={style} />
+            <TouchableOpacity
+                key={uri}
+                activeOpacity={0.75}
+                onPress={() => onPressImage(uri)}
+                style={style}
+            >
+                <Image source={{ uri }} style={styles.image} />
+            </TouchableOpacity>
         );
     }
 
@@ -63,6 +112,7 @@ class ImageGrid extends Component {
                 data={images}
                 renderItem={this.renderItem}
                 keyExtractor={keyExtractor}
+                onEndReached={this.getNextImages}
             />
         );
     }

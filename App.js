@@ -7,6 +7,9 @@ import Status from './src/components/Status';
 import Toolbar from './src/components/Toolbar';
 import { createImageMessage, createLocationMessage, createTextMessage } from './src/utils/MessageUtils';
 import ImageGrid from './src/components/ImageGrid';
+import MessagingContainer, { INPUT_METHOD } from './src/components/MessagingContainer';
+import MeasureLayout from './src/components/MeasureLayout';
+import KeyboardState from './src/components/KeyboardState';
 
 class App extends Component {
   constructor(props) {
@@ -23,11 +26,19 @@ class App extends Component {
       ],
       fullscreenImageId: null,
       isInputFocused: false,
+      inputMethod: INPUT_METHOD.NONE,
     };
   }
 
-  handlePressToolbarCamera = () => {
+  handleChangeInputMethod = (inputMethod) => {
+    this.setState({ inputMethod });
+  };
 
+  handlePressToolbarCamera = () => {
+    this.setState({
+      isInputFocused: false,
+      inputMethod: INPUT_METHOD.CUSTOM,
+    });
   }
 
   handlePressToolbarLocation = () => {
@@ -179,20 +190,50 @@ class App extends Component {
     );
   }
 
+  handlePressImage = (uri) => {
+    const { messages } = this.state;
+    this.setState({
+      messages: [createImageMessage(uri), ...messages],
+    });
+  };
+
   renderInputMethodEditor() {
     return (
       <View style={styles.inputMethodEditor}>
-        <ImageGrid />
+        <ImageGrid onPressImage={this.handlePressImage} />
       </View>);
   }
 
   render() {
+    const { inputMethod } = this.state;
+
     return (
       <View style={styles.container}>
         <Status />
-        {this.renderMessageList()}
-        {this.renderToolbar()}
-        {this.renderInputMethodEditor()}
+        <MeasureLayout>
+          {layout => (
+            <KeyboardState layout={layout}>
+              {keyboardInfo => (
+                <MessagingContainer
+                  {...keyboardInfo}
+                  inputMethod={inputMethod}
+                  onChangeInputMethod={this.handleChangeInputMethod}
+                  renderInputMethodEditor={this.renderInputMethodEditor}
+                >
+                  {this.renderMessageList()}
+                  {this.renderToolbar()}
+                </MessagingContainer>
+              )
+
+              }
+
+            </KeyboardState>
+          )
+
+          }
+        </MeasureLayout>
+
+        {/* {this.renderInputMethodEditor()} */}
         {this.renderFullscreenImage()}
       </View>);
   }

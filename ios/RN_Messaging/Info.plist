@@ -42,6 +42,9 @@
     <string>Your location is required for xyz benefits for you</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Your location is required for xyz benefits for you</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photos for listing</string>
 	
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
