@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, Alert, TouchableHighlight, Image, BackHandler } from 'react-native';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import Geolocation from '@react-native-community/geolocation';
 import MessageList from './src/components/MessageList';
 import Status from './src/components/Status';
+import Toolbar from './src/components/Toolbar';
 import { createImageMessage, createLocationMessage, createTextMessage } from './src/utils/MessageUtils';
 
 class App extends Component {
@@ -18,8 +21,51 @@ class App extends Component {
         createTextMessage('Guys'),
       ],
       fullscreenImageId: null,
+      isInputFocused: false,
     };
   }
+
+  handlePressToolbarCamera = () => {
+
+  }
+
+  handlePressToolbarLocation = () => {
+    const { messages } = this.state;
+
+    const permission = this.requestLocationPermission();
+
+    if (!permission) return;
+
+    Geolocation.getCurrentPosition((position) => {
+      //success
+      console.log('handlePressToolbarLocation res', position);
+      const { coords: { latitude, longitude } } = position;
+      this.setState({
+        messages: [
+          createLocationMessage({
+            latitude, longitude,
+          }),
+          ...messages,
+        ],
+      });
+    }, (res) => {
+      //no permissions or other errors
+      console.log('handlePressToolbarLocation err', res);
+      //error
+    });
+
+  }
+  handleChangeFocus = (isFocused) => {
+    this.setState({ isInputFocused: isFocused });
+  };
+
+  handleSubmit = (text) => {
+    const { messages } = this.state;
+    this.setState({
+      messages: [createTextMessage(text), ...messages],
+    });
+  };
+
 
 
   componentDidMount() {
@@ -30,10 +76,22 @@ class App extends Component {
       }
       return false;
     });
+
+   
+  }
+
+  requestLocationPermission = async () => {
+    const permissionResult = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    if (permissionResult === 'granted') {
+      console.log('granted');
+      return true;
+    } else {
+      return false;
+    }
   }
 
   componentWillUnmount() {
-    this.subscription();
+    this.subscription.remove();
   }
 
   dismissFullscreenImage = () => {
@@ -87,7 +145,7 @@ class App extends Component {
         break;
 
       case 'image':
-        this.setState({ fullscreenImageId: id });
+        this.setState({ fullscreenImageId: id, isInputFocused: false });
         break;
 
       default:
@@ -108,7 +166,18 @@ class App extends Component {
   }
 
   renderToolbar() {
-    return (<View style={styles.toolbar}></View>);
+    const { isInputFocused } = this.state;
+    return (
+      <View style={styles.toolbar}>
+        <Toolbar
+          isFocused={isInputFocused}
+          onSubmit={this.handleSubmit}
+          onChangeFocus={this.handleChangeFocus}
+          onPressCamera={this.handlePressToolbarCamera}
+          onPressLocation={this.handlePressToolbarLocation}
+        />
+      </View>
+    );
   }
 
   renderInputMethodEditor() {

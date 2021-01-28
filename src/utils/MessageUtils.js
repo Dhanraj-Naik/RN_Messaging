@@ -36,7 +36,7 @@ export const createImageMessage = (uri) => {
 
 export function createLocationMessage(coordinate) {
     return {
-        type: 'image',
+        type: 'location',
         id: getNextId(),
         coordinate,
     };

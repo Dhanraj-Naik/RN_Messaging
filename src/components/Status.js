@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, StatusBar, Platform } from 'react-native';
-import NetInfo from "@react-native-community/netinfo";
+import NetInfo from '@react-native-community/netinfo';
 import { StatusBarHeight } from '../utils/StatusBarHeight';
 
 class Status extends Component {
@@ -23,7 +23,7 @@ class Status extends Component {
         // eslint-disable-next-line react/no-did-mount-set-state
         this.setState({
             // info: info.isConnected,
-            info: info.isInternetReachable,
+            info: info.isInternetReachable || false,
         });
     }
 

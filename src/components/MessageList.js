@@ -8,6 +8,7 @@ import { MessageShape } from '../utils/MessageUtils';
 
 const keyExtractor = item => item.id.toString();
 
+const TAG = 'MessageList.js';
 class MessageList extends Component {
 
     static propeTypes = {
@@ -69,6 +70,7 @@ class MessageList extends Component {
     render() {
 
         const { messages } = this.props;
+        console.log(TAG, 'messages: ', messages);
         return (
             <View>
                 <FlatList
