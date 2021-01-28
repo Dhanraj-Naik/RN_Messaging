@@ -34,3 +34,8 @@
 + **pointerEvents={'none'}** added to Status component so that the view doesnt prevent us from tapping the *ScrollView* we'll rendr it.
 The *pointerEvents* prop allows us to control whether an component can respond to touch interactions or whether they pass through to the component behind it.
 
++ **@react-native-community/geolocation** package used to get current location
++ **react-native-maps** package used to display current location on MapView.
++ **react-native-permissions** package used to request location permission.
++ **@react-native-community/netinfo** package is used to check current network connectivity.
++ 
