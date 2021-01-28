@@ -6,6 +6,7 @@ import MessageList from './src/components/MessageList';
 import Status from './src/components/Status';
 import Toolbar from './src/components/Toolbar';
 import { createImageMessage, createLocationMessage, createTextMessage } from './src/utils/MessageUtils';
+import ImageGrid from './src/components/ImageGrid';
 
 class App extends Component {
   constructor(props) {
@@ -76,8 +77,6 @@ class App extends Component {
       }
       return false;
     });
-
-   
   }
 
   requestLocationPermission = async () => {
@@ -182,7 +181,9 @@ class App extends Component {
 
   renderInputMethodEditor() {
     return (
-      <View style={styles.inputMethodEditor}></View>);
+      <View style={styles.inputMethodEditor}>
+        <ImageGrid />
+      </View>);
   }
 
   render() {

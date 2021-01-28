@@ -13,7 +13,7 @@ class Status extends Component {
 
     async componentDidMount() {
         this.subscription = NetInfo.addEventListener(state => {
-            console.log('Connection type', state);
+            // console.log('Connection type', state);
             this.setState({
                 info: state.isInternetReachable,
             });
